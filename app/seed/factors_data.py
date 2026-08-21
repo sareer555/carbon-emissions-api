@@ -11,8 +11,11 @@ Sources (verified against the primary spreadsheets on 2026-08-21):
   using the same AR5 GWPs and 1 lb = 0.45359237 kg. All 27 eGRID subregions plus
   the U.S. national average are included.
 - UK grid factor (Scope 2): UK Government (DEFRA/DESNZ) "Greenhouse gas reporting:
-  conversion factors 2026" full set, "UK electricity" tab, "Electricity generated"
-  location-based factor for reporting year 2026.
+  conversion factors" full sets, "UK electricity" tab, "Electricity generated"
+  location-based factor. Both the 2025 and 2026 editions' reporting-year factors
+  are included ('UK-2025', 'UK-2026'), since DEFRA's own guidance is to apply the
+  factor matching the year the activity occurred, not the publication year. 'UK'
+  is a convenience alias for the latest edition.
 
 Units:
 - scope1_fuel factors are kg CO2e per canonical unit (see app/services/units.py
@@ -334,11 +337,42 @@ SCOPE2_GRID_FACTORS = [
         "source": "UK Government (DEFRA/DESNZ) GHG Conversion Factors for Company Reporting, 2026 full set",
         "source_year": 2026,
         "notes": (
+            "Alias for the latest available reporting year (currently 2026 -> same "
+            "value as 'UK-2026'). UK electricity generation, location-based factor: "
+            "0.12943 kg CO2 + 0.00067 kg CH4-as-CO2e + 0.00086 kg N2O-as-CO2e per kWh "
+            "= 0.13096 kg CO2e/kWh. For emissions attributable to a specific reporting "
+            "year, use the explicit 'UK-2025' / 'UK-2026' keys instead of this alias."
+        ),
+    },
+    {
+        "category": "scope2_grid",
+        "key": "UK-2026",
+        "factor": 0.13096,
+        "unit": "kwh",
+        "source": "UK Government (DEFRA/DESNZ) GHG Conversion Factors for Company Reporting, 2026 full set",
+        "source_year": 2026,
+        "notes": (
             "UK electricity generation, location-based factor, reporting year 2026: "
             "0.12943 kg CO2 + 0.00067 kg CH4-as-CO2e + 0.00086 kg N2O-as-CO2e per kWh "
             "= 0.13096 kg CO2e/kWh. Down from 0.177 kg CO2e/kWh in the 2025 edition "
             "(DEFRA's 2026 update cites a methodology improvement plus continued grid "
             "decarbonization)."
+        ),
+    },
+    {
+        "category": "scope2_grid",
+        "key": "UK-2025",
+        "factor": 0.177,
+        "unit": "kwh",
+        "source": "UK Government (DEFRA/DESNZ) GHG Conversion Factors for Company Reporting, 2025 full set",
+        "source_year": 2025,
+        "notes": (
+            "UK electricity generation, location-based factor, reporting year 2025: "
+            "0.17489 kg CO2 + 0.0009 kg CH4-as-CO2e + 0.00122 kg N2O-as-CO2e per kWh "
+            "= 0.177 kg CO2e/kWh. Kept available for organisations reporting on "
+            "activity that occurred during the 2025 calendar year, per DEFRA's own "
+            "guidance to apply the factor matching the reporting year, not the "
+            "publication year."
         ),
     },
 ]

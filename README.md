@@ -107,7 +107,10 @@ server-side (`app/services/units.py`).
 All 27 EPA eGRID subregions (`US-CAMX`, `US-ERCT`, `US-NYUP`, `US-RFCW`,
 `US-FRCC`, `US-MROW`, etc. — see `GET /v1/factors` for the full list),
 plus a `US-AVG` national-average fallback for callers who don't know their
-customer's subregion, and `UK` (DEFRA/DESNZ). Expand to other countries by
+customer's subregion. UK grid factors are year-keyed — `UK-2025` and
+`UK-2026` hold each edition's reporting-year factor (DEFRA's guidance is
+to use the factor matching the year the activity occurred), and `UK` is a
+convenience alias for the latest edition. Expand to other countries by
 adding rows to `app/seed/factors_data.py` — see the roadmap in the
 original build brief for a request-driven expansion plan.
 
