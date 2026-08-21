@@ -7,7 +7,8 @@ app/scripts/create_api_key.py.
 import hashlib
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Depends, Header
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -17,6 +18,13 @@ from app.errors import QuotaExceededError, UnauthorizedError
 from app.models import ApiKey
 
 settings = get_settings()
+
+# A real FastAPI security scheme (rather than a raw Header() param) so
+# Swagger UI renders a single global "Authorize" button that applies the
+# bearer token to every protected endpoint, instead of a per-endpoint text
+# field. auto_error=False so a missing header raises our own UnauthorizedError
+# with our error shape, not FastAPI's default 403.
+bearer_scheme = HTTPBearer(auto_error=False, description="Your API key, e.g. cek_...")
 
 
 def hash_key(plaintext_key: str) -> str:
@@ -36,7 +44,7 @@ def _maybe_reset_period(api_key: ApiKey, db: Session) -> None:
 
 
 def get_api_key(
-    authorization: str | None = Header(default=None),
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
     db: Session = Depends(get_db),
 ) -> ApiKey:
     """Validate the Bearer API key and enforce the caller's monthly quota.
@@ -44,10 +52,10 @@ def get_api_key(
     Raises UnauthorizedError (401) for missing/invalid/inactive keys, and
     QuotaExceededError (429) once the plan's monthly call limit is reached.
     """
-    if not authorization or not authorization.lower().startswith("bearer "):
+    if credentials is None:
         raise UnauthorizedError("Missing or malformed Authorization header. Expected 'Bearer <api_key>'.")
 
-    plaintext_key = authorization.split(" ", 1)[1].strip()
+    plaintext_key = credentials.credentials.strip()
     if not plaintext_key:
         raise UnauthorizedError("Missing API key.")
 

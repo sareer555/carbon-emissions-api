@@ -11,10 +11,11 @@ for everyone, so a forgotten env var fails closed rather than open.
 """
 import secrets
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
-from app.auth import hash_key
+from app.auth import bearer_scheme, hash_key
 from app.config import get_settings
 from app.database import get_db
 from app.errors import UnauthorizedError
@@ -25,17 +26,16 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 settings = get_settings()
 
 
-def require_admin_token(authorization: str | None = Header(default=None)) -> None:
+def require_admin_token(credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme)) -> None:
     configured = settings.admin_bootstrap_token
     if not configured:
         # Fail closed: no token configured means this endpoint doesn't exist.
         raise UnauthorizedError("Admin endpoint is disabled (ADMIN_BOOTSTRAP_TOKEN not set).")
 
-    if not authorization or not authorization.lower().startswith("bearer "):
+    if credentials is None:
         raise UnauthorizedError("Missing or malformed Authorization header. Expected 'Bearer <admin_token>'.")
 
-    provided = authorization.split(" ", 1)[1].strip()
-    if not secrets.compare_digest(provided, configured):
+    if not secrets.compare_digest(credentials.credentials, configured):
         raise UnauthorizedError("Invalid admin token.")
 
 
