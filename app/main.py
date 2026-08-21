@@ -7,7 +7,7 @@ from app import __version__
 from app.config import get_settings
 from app.database import init_db
 from app.errors import register_exception_handlers
-from app.routers import calculate, factors, health
+from app.routers import admin, calculate, factors, health
 
 settings = get_settings()
 
@@ -44,6 +44,7 @@ register_exception_handlers(app)
 app.include_router(health.router, prefix=settings.api_prefix)
 app.include_router(factors.router, prefix=settings.api_prefix)
 app.include_router(calculate.router, prefix=settings.api_prefix)
+app.include_router(admin.router, prefix=settings.api_prefix)
 
 
 @app.get("/", include_in_schema=False)

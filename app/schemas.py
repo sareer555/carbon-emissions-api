@@ -92,3 +92,14 @@ class ErrorDetail(BaseModel):
 
 class ErrorResponse(BaseModel):
     error: ErrorDetail
+
+
+class AdminCreateKeyRequest(BaseModel):
+    plan: Literal["free", "starter", "growth", "scale"] = "free"
+    label: Optional[str] = Field(default=None, description="Human-readable owner/customer name.")
+
+
+class AdminCreateKeyResponse(BaseModel):
+    api_key: str = Field(..., description="Plaintext API key. Shown only in this response — save it now.")
+    plan: str
+    label: Optional[str] = None

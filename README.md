@@ -92,6 +92,7 @@ except `/v1/health`.
 | `POST /v1/calculate/scope1` | required | Direct fuel combustion emissions |
 | `POST /v1/calculate/scope2` | required | Purchased electricity emissions |
 | `POST /v1/calculate/batch` | required | Sum many Scope 1 + Scope 2 line items in one call (e.g. a year of utility bills) |
+| `POST /v1/admin/keys` | admin token | Issue a new customer API key. Only for provisioning keys where shell access isn't available (e.g. Render free tier) — see "Deploying at $0 cost" below. Disabled (404) unless `ADMIN_BOOTSTRAP_TOKEN` is set. |
 
 Full interactive spec: `/docs` (Swagger UI) and `/openapi.json`.
 
@@ -144,7 +145,7 @@ app/
   auth.py                    Bearer API-key auth + monthly quota enforcement
   rate_limit.py               Per-key burst limiter (in-memory, or Redis if REDIS_URL is set)
   logging_config.py            Writes one request_log row per calculation call
-  routers/{health,factors,calculate}.py
+  routers/{health,factors,calculate,admin}.py
   services/{emissions,units}.py   Calculation engine + unit conversion
   seed/{factors_data,seed_db}.py   Emission factor seed data + loader script
   scripts/create_api_key.py         Issue a new API key (prints plaintext once)
@@ -168,9 +169,16 @@ on first deploy.
 2. **New +** → **Blueprint** → select `sareer555/carbon-emissions-api`.
 3. Render reads `render.yaml` and provisions everything. First deploy takes
    a few minutes.
-4. Once live, open the service's **Shell** tab in the Render dashboard and
-   run `python -m app.scripts.create_api_key --plan free --label "first-key"`
-   to issue a real API key — save it immediately, it's shown only once.
+4. Render's free tier has **no Shell access**, so issue your first API key
+   over HTTP instead of via `create_api_key.py`:
+   - In the web service's **Environment** tab, find the auto-generated
+     `ADMIN_BOOTSTRAP_TOKEN` value (click to reveal it).
+   - Open `/docs`, expand `POST /v1/admin/keys`, click **Authorize** and
+     paste that token as the bearer token, then **Try it out** with a body
+     like `{"plan": "free", "label": "first-key"}`.
+   - Copy the `api_key` from the response immediately — it's shown once,
+     never stored in plaintext. This endpoint 404s for anyone without the
+     token, and 401s on a wrong one (see `app/routers/admin.py`).
 5. Your API is now live at `https://<your-service-name>.onrender.com`. Try
    `GET /v1/health` and `/docs`.
 
