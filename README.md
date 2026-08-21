@@ -107,11 +107,16 @@ server-side (`app/services/units.py`).
 All 27 EPA eGRID subregions (`US-CAMX`, `US-ERCT`, `US-NYUP`, `US-RFCW`,
 `US-FRCC`, `US-MROW`, etc. — see `GET /v1/factors` for the full list),
 plus a `US-AVG` national-average fallback for callers who don't know their
-customer's subregion. UK grid factors are year-keyed — `UK-2025` and
-`UK-2026` hold each edition's reporting-year factor (DEFRA's guidance is
-to use the factor matching the year the activity occurred), and `UK` is a
-convenience alias for the latest edition. Expand to other countries by
-adding rows to `app/seed/factors_data.py` — see the roadmap in the
+customer's subregion.
+
+Every region is year-keyed, since both EPA eGRID and UK DEFRA republish
+new factors annually and a customer reconciling last year's utility bills
+should get last year's factor, not this year's: `US-CAMX-2023`, `US-AVG-2023`,
+`UK-2025`, `UK-2026`, etc. hold each dataset's explicit reporting-year
+factor, and the bare key (`US-CAMX`, `US-AVG`, `UK`) is a convenience
+alias that always tracks the latest dataset verified in
+`app/seed/factors_data.py`. Expand to other countries or add a new year by
+adding rows — see the roadmap in the
 original build brief for a request-driven expansion plan.
 
 ### Error shape
@@ -175,10 +180,14 @@ docker run -p 8000:8000 -e DATABASE_URL=<your-postgres-url> carbon-emissions-api
 
 ## Refreshing emission factors
 
+Grid regions (Scope 2) follow an **explicit-year + alias** pattern — see
+"Supported grid regions" above. When a new year's dataset is published:
+
 1. Download the current source spreadsheet: [EPA GHG Emission Factors Hub](https://www.epa.gov/climateleadership/ghg-emission-factors-hub), [EPA eGRID](https://www.epa.gov/egrid), [UK DEFRA/DESNZ conversion factors](https://www.gov.uk/government/collections/government-conversion-factors-for-company-reporting).
-2. Update the relevant row(s) in `app/seed/factors_data.py`, including `source_year` and a `notes` entry documenting the calculation.
-3. Run `python -m app.seed.seed_db` — it upserts by `(category, key)`, so existing rows are updated in place and history isn't lost from `request_log`.
-4. Never delete a factor a customer might have already been billed against without checking `request_log` first.
+2. **Add** new `-YYYY` rows to `app/seed/factors_data.py` for the new year — don't overwrite the prior year's row. Include `source_year` and a `notes` entry showing the source-to-factor arithmetic (see the existing rows for the format).
+3. **Repoint the bare-key alias** (e.g. `US-CAMX`, `UK`) to the new year's value once it's verified, so integrators who didn't pin a year automatically move forward.
+4. Run `python -m app.seed.seed_db` — it upserts by `(category, key)`, so existing rows are updated in place and history isn't lost from `request_log`.
+5. Never delete a prior year's `-YYYY` row a customer might be reconciling historical activity against, and never delete a factor a customer might have already been billed against without checking `request_log` first.
 
 ---
 

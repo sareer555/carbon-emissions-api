@@ -9,7 +9,11 @@ Sources (verified against the primary spreadsheets on 2026-08-21):
 - US grid factors (Scope 2): EPA eGRID Summary Tables 2023 (eGRID2023 data),
   Table 1 "Subregion Output Emission Rates" (lb/MWh), converted to kg CO2e/kWh
   using the same AR5 GWPs and 1 lb = 0.45359237 kg. All 27 eGRID subregions plus
-  the U.S. national average are included.
+  the U.S. national average are included, each with an explicit year-keyed row
+  (e.g. 'US-CAMX-2023', matching the eGRID *dataset* year, since eGRID for a
+  given year is published roughly two years later) plus a bare-key alias (e.g.
+  'US-CAMX') that tracks the latest eGRID dataset verified in this file -- same
+  pattern as the UK rows below.
 - UK grid factor (Scope 2): UK Government (DEFRA/DESNZ) "Greenhouse gas reporting:
   conversion factors" full sets, "UK electricity" tab, "Electricity generated"
   location-based factor. Both the 2025 and 2026 editions' reporting-year factors
@@ -76,9 +80,14 @@ SCOPE1_FUEL_FACTORS = [
 
 SCOPE2_GRID_FACTORS = [
     # --- United States (EPA eGRID Summary Tables 2023 / eGRID2023 data) ---
+    # Each subregion has an explicit year-keyed row (e.g. 'US-CAMX-2023', matching
+    # the eGRID dataset year, not the publication date) plus a bare-key alias
+    # ('US-CAMX') that always tracks the latest eGRID dataset available. When a
+    # newer eGRID release is verified, add its '-YYYY' rows alongside these and
+    # repoint the aliases -- exactly the pattern used for the UK grid factors.
     {
         "category": "scope2_grid",
-        "key": "US-AKGD",
+        "key": "US-AKGD-2023",
         "factor": 0.4106,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -87,7 +96,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-AKMS",
+        "key": "US-AKGD",
+        "factor": 0.4106,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-AKGD-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-AKMS-2023",
         "factor": 0.2369,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -96,7 +114,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-AZNM",
+        "key": "US-AKMS",
+        "factor": 0.2369,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-AKMS-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-AZNM-2023",
         "factor": 0.3203,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -105,7 +132,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-CAMX",
+        "key": "US-AZNM",
+        "factor": 0.3203,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-AZNM-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-CAMX-2023",
         "factor": 0.195,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -114,7 +150,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-ERCT",
+        "key": "US-CAMX",
+        "factor": 0.195,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-CAMX-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-ERCT-2023",
         "factor": 0.3341,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -123,7 +168,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-FRCC",
+        "key": "US-ERCT",
+        "factor": 0.3341,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-ERCT-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-FRCC-2023",
         "factor": 0.3559,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -132,7 +186,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-HIMS",
+        "key": "US-FRCC",
+        "factor": 0.3559,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-FRCC-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-HIMS-2023",
         "factor": 0.5141,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -141,7 +204,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-HIOA",
+        "key": "US-HIMS",
+        "factor": 0.5141,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-HIMS-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-HIOA-2023",
         "factor": 0.6799,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -150,7 +222,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-MROE",
+        "key": "US-HIOA",
+        "factor": 0.6799,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-HIOA-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-MROE-2023",
         "factor": 0.6373,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -159,7 +240,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-MROW",
+        "key": "US-MROE",
+        "factor": 0.6373,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-MROE-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-MROW-2023",
         "factor": 0.4203,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -168,7 +258,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-NEWE",
+        "key": "US-MROW",
+        "factor": 0.4203,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-MROW-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NEWE-2023",
         "factor": 0.2464,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -177,7 +276,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-NWPP",
+        "key": "US-NEWE",
+        "factor": 0.2464,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-NEWE-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NWPP-2023",
         "factor": 0.2882,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -186,7 +294,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-NYCW",
+        "key": "US-NWPP",
+        "factor": 0.2882,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-NWPP-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NYCW-2023",
         "factor": 0.3926,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -195,7 +312,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-NYLI",
+        "key": "US-NYCW",
+        "factor": 0.3926,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-NYCW-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NYLI-2023",
         "factor": 0.5395,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -204,7 +330,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-NYUP",
+        "key": "US-NYLI",
+        "factor": 0.5395,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-NYLI-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NYUP-2023",
         "factor": 0.1101,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -213,7 +348,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-PRMS",
+        "key": "US-NYUP",
+        "factor": 0.1101,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-NYUP-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-PRMS-2023",
         "factor": 0.7023,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -222,7 +366,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-RFCE",
+        "key": "US-PRMS",
+        "factor": 0.7023,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-PRMS-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RFCE-2023",
         "factor": 0.2718,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -231,7 +384,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-RFCM",
+        "key": "US-RFCE",
+        "factor": 0.2718,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-RFCE-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RFCM-2023",
         "factor": 0.4427,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -240,7 +402,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-RFCW",
+        "key": "US-RFCM",
+        "factor": 0.4427,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-RFCM-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RFCW-2023",
         "factor": 0.4155,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -249,7 +420,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-RMPA",
+        "key": "US-RFCW",
+        "factor": 0.4155,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-RFCW-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RMPA-2023",
         "factor": 0.4729,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -258,7 +438,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SPNO",
+        "key": "US-RMPA",
+        "factor": 0.4729,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-RMPA-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SPNO-2023",
         "factor": 0.3935,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -267,7 +456,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SPSO",
+        "key": "US-SPNO",
+        "factor": 0.3935,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SPNO-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SPSO-2023",
         "factor": 0.3972,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -276,7 +474,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SRMV",
+        "key": "US-SPSO",
+        "factor": 0.3972,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SPSO-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRMV-2023",
         "factor": 0.3364,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -285,7 +492,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SRMW",
+        "key": "US-SRMV",
+        "factor": 0.3364,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SRMV-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRMW-2023",
         "factor": 0.5663,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -294,7 +510,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SRSO",
+        "key": "US-SRMW",
+        "factor": 0.5663,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SRMW-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRSO-2023",
         "factor": 0.3837,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -303,7 +528,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SRTV",
+        "key": "US-SRSO",
+        "factor": 0.3837,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SRSO-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRTV-2023",
         "factor": 0.4097,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -312,7 +546,16 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-SRVC",
+        "key": "US-SRTV",
+        "factor": 0.4097,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SRTV-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRVC-2023",
         "factor": 0.2705,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
@@ -321,12 +564,30 @@ SCOPE2_GRID_FACTORS = [
     },
     {
         "category": "scope2_grid",
-        "key": "US-AVG",
+        "key": "US-SRVC",
+        "factor": 0.2705,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-SRVC-2023').",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-AVG-2023",
         "factor": 0.3497,
         "unit": "kwh",
         "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
         "source_year": 2023,
         "notes": "U.S. national average (all subregions). 767.209 lb CO2/MWh + 0.057 lb CH4/MWh + 0.008 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3497 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-AVG",
+        "factor": 0.3497,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Alias for the latest available eGRID dataset (currently 2023 -> same value as 'US-AVG-2023').",
     },
     # --- United Kingdom (DEFRA/DESNZ GHG Conversion Factors) ---
     {
