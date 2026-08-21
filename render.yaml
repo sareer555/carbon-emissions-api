@@ -1,0 +1,35 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# One-click deploy: on render.com, "New +" -> "Blueprint" -> connect this
+# repo. Render reads this file and provisions the web service + free
+# Postgres database automatically, wires DATABASE_URL between them, and
+# seeds the emission factors as part of the first deploy.
+#
+# After the first deploy, use the Render dashboard's "Shell" tab on the
+# web service to run:
+#   python -m app.scripts.create_api_key --plan free --label "my-first-key"
+# to issue a real API key (it's never stored in plaintext, so save it then).
+
+databases:
+  - name: carbon-emissions-db
+    plan: free
+    databaseName: carbon_emissions
+    user: carbon_emissions
+
+services:
+  - type: web
+    name: carbon-emissions-api
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python -m app.seed.seed_db && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /v1/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: carbon-emissions-db
+          property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.12.0

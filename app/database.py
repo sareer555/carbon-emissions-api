@@ -10,9 +10,17 @@ from app.config import get_settings
 
 settings = get_settings()
 
-connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
+# Render, Heroku, and some other hosts hand out `postgres://` connection
+# strings, but SQLAlchemy's psycopg2 driver requires the `postgresql://`
+# scheme. Normalize it so DATABASE_URL can be pasted in verbatim from those
+# platforms' dashboards.
+_database_url = settings.database_url
+if _database_url.startswith("postgres://"):
+    _database_url = _database_url.replace("postgres://", "postgresql://", 1)
 
-engine = create_engine(settings.database_url, connect_args=connect_args, future=True)
+connect_args = {"check_same_thread": False} if _database_url.startswith("sqlite") else {}
+
+engine = create_engine(_database_url, connect_args=connect_args, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 
 

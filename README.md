@@ -157,10 +157,33 @@ Database schema matches the build brief (`emission_factors`, `api_keys`,
 
 ## Deploying at $0 cost
 
+### Fastest path: Render Blueprint (one click)
+
+This repo includes [`render.yaml`](render.yaml) — a Render Blueprint that
+provisions the web service **and** a free Postgres database together, wires
+`DATABASE_URL` between them automatically, and seeds the emission factors
+on first deploy.
+
+1. Go to [render.com](https://render.com), sign in with GitHub.
+2. **New +** → **Blueprint** → select `sareer555/carbon-emissions-api`.
+3. Render reads `render.yaml` and provisions everything. First deploy takes
+   a few minutes.
+4. Once live, open the service's **Shell** tab in the Render dashboard and
+   run `python -m app.scripts.create_api_key --plan free --label "first-key"`
+   to issue a real API key — save it immediately, it's shown only once.
+5. Your API is now live at `https://<your-service-name>.onrender.com`. Try
+   `GET /v1/health` and `/docs`.
+
+Render's free web service tier spins down after inactivity and takes ~30s
+to wake on the next request — fine for evaluation/early customers, upgrade
+the plan once you have paying traffic that can't tolerate the cold start.
+
+### Other free-tier options
+
 | Layer | Free option |
 |---|---|
 | Hosting | Render or Fly.io free tier — `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
-| Database | Supabase or Neon Postgres free tier — set `DATABASE_URL` |
+| Database | Render, Supabase, or Neon Postgres free tier — set `DATABASE_URL` |
 | Rate limiting across instances | Upstash Redis free tier — set `REDIS_URL` |
 | Docs | Free — FastAPI auto-generates `/docs` and `/openapi.json` |
 | Distribution | List the OpenAPI spec on RapidAPI (handles billing/discovery); self-host + Stripe for direct customers later |
