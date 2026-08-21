@@ -1,18 +1,18 @@
 """Seed data for the `emission_factors` table.
 
-⚠️ VERIFY BEFORE PRODUCTION / PAID USE ⚠️
---------------------------------------------------------------------------
-These figures were compiled from the publicly published EPA GHG Emission
-Factors Hub, EPA eGRID, and UK DEFRA/DESNZ GHG Conversion Factors, using
-web research performed inside a sandboxed environment with no direct
-network access to epa.gov or gov.uk. Every row below cites the document and
-year it was drawn from and includes a `notes` field with the calculation
-used to derive it. Before charging customers or presenting this data as
-audit-grade, a human should re-derive each figure directly from the
-primary spreadsheet (see README "Refreshing emission factors") and update
-this file. This mirrors the project's own trust requirement in section 3
-of the build brief: never present unverified numbers as certified.
---------------------------------------------------------------------------
+Sources (verified against the primary spreadsheets on 2026-08-21):
+
+- US fuel factors (Scope 1): EPA "Emission Factors for Greenhouse Gas Inventories"
+  (GHG Emission Factors Hub), 2025 edition, Table 1 (Stationary Combustion).
+  GWPs used to combine CO2 + CH4 + N2O into CO2e are the Hub's own IPCC AR5
+  100-year values: CH4 = 28, N2O = 265 (see the Hub's "Gas / 100-Year GWP" table).
+- US grid factors (Scope 2): EPA eGRID Summary Tables 2023 (eGRID2023 data),
+  Table 1 "Subregion Output Emission Rates" (lb/MWh), converted to kg CO2e/kWh
+  using the same AR5 GWPs and 1 lb = 0.45359237 kg. All 27 eGRID subregions plus
+  the U.S. national average are included.
+- UK grid factor (Scope 2): UK Government (DEFRA/DESNZ) "Greenhouse gas reporting:
+  conversion factors 2026" full set, "UK electricity" tab, "Electricity generated"
+  location-based factor for reporting year 2026.
 
 Units:
 - scope1_fuel factors are kg CO2e per canonical unit (see app/services/units.py
@@ -24,113 +24,324 @@ SCOPE1_FUEL_FACTORS = [
     {
         "category": "scope1_fuel",
         "key": "natural_gas",
-        "factor": 5.311,
+        "factor": 5.3115,
         "unit": "therms",
-        "source": "EPA GHG Emission Factors Hub (2025 edition)",
+        "source": "EPA GHG Emission Factors Hub (2025 edition), Table 1: Stationary Combustion - Natural Gas",
         "source_year": 2025,
         "notes": (
-            "Derived from the Hub's stationary combustion natural gas factors: "
-            "53.06 kg CO2/mmBtu + 1.0 g CH4/mmBtu (GWP 25) + 0.10 g N2O/mmBtu "
-            "(GWP 298) = 53.115 kg CO2e/mmBtu; 1 therm = 0.1 mmBtu -> 5.311 kg CO2e/therm."
+            "53.06 kg CO2/mmBtu + 1 g CH4/mmBtu (GWP 28) + 0.1 g N2O/mmBtu (GWP 265) "
+            "= 53.1145 kg CO2e/mmBtu; 1 therm = 0.1 mmBtu -> 5.3115 kg CO2e/therm."
         ),
     },
     {
         "category": "scope1_fuel",
         "key": "diesel",
-        "factor": 10.21,
+        "factor": 10.2427,
         "unit": "gallons",
-        "source": "EPA GHG Emission Factors Hub (2025 edition)",
+        "source": "EPA GHG Emission Factors Hub (2025 edition), Table 1: Stationary Combustion - Distillate Fuel Oil No. 2",
         "source_year": 2025,
-        "notes": "Distillate fuel oil no. 2, stationary combustion, CO2 factor per US gallon.",
+        "notes": (
+            "10.21 kg CO2/gal + 0.41 g CH4/gal (GWP 28) + 0.08 g N2O/gal (GWP 265) "
+            "= 10.2427 kg CO2e/gallon."
+        ),
     },
     {
         "category": "scope1_fuel",
         "key": "gasoline",
-        "factor": 8.887,
+        "factor": 8.8118,
         "unit": "gallons",
-        "source": "EPA GHG Emission Factors Hub / EPA GHG Equivalencies Calculator methodology (2025)",
+        "source": "EPA GHG Emission Factors Hub (2025 edition), Table 1: Stationary Combustion - Motor Gasoline",
         "source_year": 2025,
-        "notes": "Motor gasoline, widely-cited EPA figure of 8,887 g CO2 per US gallon combusted.",
+        "notes": (
+            "8.78 kg CO2/gal + 0.38 g CH4/gal (GWP 28) + 0.08 g N2O/gal (GWP 265) "
+            "= 8.8118 kg CO2e/gallon."
+        ),
     },
     {
         "category": "scope1_fuel",
         "key": "propane",
-        "factor": 5.62,
+        "factor": 5.7037,
         "unit": "gallons",
-        "source": "EPA GHG Emission Factors Hub (2025 edition)",
+        "source": "EPA GHG Emission Factors Hub (2025 edition), Table 1: Stationary Combustion - Liquefied Petroleum Gases (LPG)",
         "source_year": 2025,
         "notes": (
-            "Propane/LPG stationary combustion: 61.46 kg CO2/mmBtu x ~0.0915 mmBtu/gallon "
-            "heat content -> 5.62 kg CO2/gallon; cross-checked against 236.0 kg CO2 per "
-            "42-gallon barrel (5.62 kg/gallon)."
+            "5.68 kg CO2/gal + 0.28 g CH4/gal (GWP 28) + 0.06 g N2O/gal (GWP 265) "
+            "= 5.7037 kg CO2e/gallon."
         ),
     },
 ]
 
 SCOPE2_GRID_FACTORS = [
-    # --- United States (EPA eGRID2023 data, published January 2025) ---
+    # --- United States (EPA eGRID Summary Tables 2023 / eGRID2023 data) ---
+    {
+        "category": "scope2_grid",
+        "key": "US-AKGD",
+        "factor": 0.4106,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "ASCC Alaska Grid (AKGD). 899.633 lb CO2/MWh + 0.086 lb CH4/MWh + 0.012 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.4106 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-AKMS",
+        "factor": 0.2369,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "ASCC Miscellaneous (AKMS). 520.483 lb CO2/MWh + 0.026 lb CH4/MWh + 0.004 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.2369 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-AZNM",
+        "factor": 0.3203,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "WECC Southwest (AZNM). 703.703 lb CO2/MWh + 0.039 lb CH4/MWh + 0.005 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3203 kg CO2e/kWh.",
+    },
     {
         "category": "scope2_grid",
         "key": "US-CAMX",
-        "factor": 0.1981,
+        "factor": 0.195,
         "unit": "kwh",
-        "source": "EPA eGRID2023 (subregion output emission rates, released Jan 2025)",
-        "source_year": 2025,
-        "notes": "WECC California (CAMX). 436.655 lb CO2/MWh -> 0.1981 kg CO2e/kWh.",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "WECC California (CAMX). 428.464 lb CO2/MWh + 0.025 lb CH4/MWh + 0.003 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.195 kg CO2e/kWh.",
     },
     {
         "category": "scope2_grid",
         "key": "US-ERCT",
-        "factor": 0.3348,
+        "factor": 0.3341,
         "unit": "kwh",
-        "source": "EPA eGRID2023 (subregion output emission rates, released Jan 2025)",
-        "source_year": 2025,
-        "notes": "ERCOT All (ERCT, Texas). 738.038 lb CO2/MWh -> 0.3348 kg CO2e/kWh.",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "ERCOT All (ERCT). 733.862 lb CO2/MWh + 0.043 lb CH4/MWh + 0.006 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3341 kg CO2e/kWh.",
     },
     {
         "category": "scope2_grid",
         "key": "US-FRCC",
-        "factor": 0.3649,
+        "factor": 0.3559,
         "unit": "kwh",
-        "source": "EPA eGRID2023 (subregion output emission rates, released Jan 2025)",
-        "source_year": 2025,
-        "notes": "Florida Reliability Coordinating Council (FRCC). 804.477 lb CO2e/MWh -> 0.3649 kg CO2e/kWh.",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "FRCC All (FRCC). 782.262 lb CO2/MWh + 0.041 lb CH4/MWh + 0.005 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3559 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-HIMS",
+        "factor": 0.5141,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "HICC Miscellaneous (HIMS). 1123.371 lb CO2/MWh + 0.146 lb CH4/MWh + 0.022 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.5141 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-HIOA",
+        "factor": 0.6799,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "HICC Oahu (HIOA). 1489.548 lb CO2/MWh + 0.134 lb CH4/MWh + 0.021 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.6799 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-MROE",
+        "factor": 0.6373,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "MRO East (MROE). 1397.313 lb CO2/MWh + 0.116 lb CH4/MWh + 0.017 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.6373 kg CO2e/kWh.",
     },
     {
         "category": "scope2_grid",
         "key": "US-MROW",
-        "factor": 0.4202,
+        "factor": 0.4203,
         "unit": "kwh",
-        "source": "EPA eGRID2023 (subregion output emission rates, released Jan 2025)",
-        "source_year": 2025,
-        "notes": "MRO West (MROW, Upper Midwest). 926.443 lb CO2e/MWh -> 0.4202 kg CO2e/kWh.",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "MRO West (MROW). 920.13 lb CO2/MWh + 0.097 lb CH4/MWh + 0.014 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.4203 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NEWE",
+        "factor": 0.2464,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "NPCC New England (NEWE). 539.275 lb CO2/MWh + 0.063 lb CH4/MWh + 0.008 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.2464 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NWPP",
+        "factor": 0.2882,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "WECC Northwest (NWPP). 631.735 lb CO2/MWh + 0.054 lb CH4/MWh + 0.008 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.2882 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NYCW",
+        "factor": 0.3926,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "NPCC NYC/Westchester (NYCW). 864.469 lb CO2/MWh + 0.022 lb CH4/MWh + 0.002 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3926 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NYLI",
+        "factor": 0.5395,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "NPCC Long Island (NYLI). 1180.672 lb CO2/MWh + 0.14 lb CH4/MWh + 0.018 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.5395 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-NYUP",
+        "factor": 0.1101,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "NPCC Upstate NY (NYUP). 242.089 lb CO2/MWh + 0.011 lb CH4/MWh + 0.001 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.1101 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-PRMS",
+        "factor": 0.7023,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "Puerto Rico Miscellaneous (PRMS). 1543.073 lb CO2/MWh + 0.077 lb CH4/MWh + 0.012 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.7023 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RFCE",
+        "factor": 0.2718,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "RFC East (RFCE). 596.904 lb CO2/MWh + 0.036 lb CH4/MWh + 0.005 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.2718 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RFCM",
+        "factor": 0.4427,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "RFC Michigan (RFCM). 970.617 lb CO2/MWh + 0.082 lb CH4/MWh + 0.012 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.4427 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RFCW",
+        "factor": 0.4155,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "RFC West (RFCW). 911.424 lb CO2/MWh + 0.071 lb CH4/MWh + 0.01 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.4155 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-RMPA",
+        "factor": 0.4729,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "WECC Rockies (RMPA). 1036.601 lb CO2/MWh + 0.09 lb CH4/MWh + 0.013 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.4729 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SPNO",
+        "factor": 0.3935,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SPP North (SPNO). 861.999 lb CO2/MWh + 0.087 lb CH4/MWh + 0.012 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3935 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SPSO",
+        "factor": 0.3972,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SPP South (SPSO). 872.042 lb CO2/MWh + 0.054 lb CH4/MWh + 0.008 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3972 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRMV",
+        "factor": 0.3364,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SERC Mississippi Valley (SRMV). 739.72 lb CO2/MWh + 0.032 lb CH4/MWh + 0.004 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3364 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRMW",
+        "factor": 0.5663,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SERC Midwest (SRMW). 1239.839 lb CO2/MWh + 0.132 lb CH4/MWh + 0.019 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.5663 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRSO",
+        "factor": 0.3837,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SERC South (SRSO). 842.329 lb CO2/MWh + 0.056 lb CH4/MWh + 0.008 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3837 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRTV",
+        "factor": 0.4097,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SERC Tennessee Valley (SRTV). 898.079 lb CO2/MWh + 0.079 lb CH4/MWh + 0.011 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.4097 kg CO2e/kWh.",
+    },
+    {
+        "category": "scope2_grid",
+        "key": "US-SRVC",
+        "factor": 0.2705,
+        "unit": "kwh",
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "SERC Virginia/Carolina (SRVC). 593.419 lb CO2/MWh + 0.045 lb CH4/MWh + 0.006 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.2705 kg CO2e/kWh.",
     },
     {
         "category": "scope2_grid",
         "key": "US-AVG",
-        "factor": 0.370,
+        "factor": 0.3497,
         "unit": "kwh",
-        "source": "EPA eGRID2023 national average (approximate)",
-        "source_year": 2025,
-        "notes": (
-            "Fallback for US customers who don't know their eGRID subregion. "
-            "Approximate national average (~370 g CO2/kWh); prefer a specific "
-            "US-XXXX subregion factor when the customer's utility/region is known."
-        ),
+        "source": "EPA eGRID Summary Tables 2023 (eGRID2023 data), Table 1: Subregion Output Emission Rates",
+        "source_year": 2023,
+        "notes": "U.S. national average (all subregions). 767.209 lb CO2/MWh + 0.057 lb CH4/MWh + 0.008 lb N2O/MWh, CO2e via IPCC AR5 GWPs (CH4=28, N2O=265) -> 0.3497 kg CO2e/kWh.",
     },
-    # --- United Kingdom (DEFRA / DESNZ GHG Conversion Factors) ---
+    # --- United Kingdom (DEFRA/DESNZ GHG Conversion Factors) ---
     {
         "category": "scope2_grid",
         "key": "UK",
-        "factor": 0.177,
+        "factor": 0.13096,
         "unit": "kwh",
-        "source": "UK Government (DEFRA/DESNZ) GHG Conversion Factors for Company Reporting, 2025",
-        "source_year": 2025,
+        "source": "UK Government (DEFRA/DESNZ) GHG Conversion Factors for Company Reporting, 2026 full set",
+        "source_year": 2026,
         "notes": (
-            "UK electricity generation, location-based factor. Down from 0.207 kg "
-            "CO2e/kWh in the 2024 edition, reflecting continued grid decarbonization."
+            "UK electricity generation, location-based factor, reporting year 2026: "
+            "0.12943 kg CO2 + 0.00067 kg CH4-as-CO2e + 0.00086 kg N2O-as-CO2e per kWh "
+            "= 0.13096 kg CO2e/kWh. Down from 0.177 kg CO2e/kWh in the 2025 edition "
+            "(DEFRA's 2026 update cites a methodology improvement plus continued grid "
+            "decarbonization)."
         ),
     },
 ]
 
 ALL_FACTORS = SCOPE1_FUEL_FACTORS + SCOPE2_GRID_FACTORS
+

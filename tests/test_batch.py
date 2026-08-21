@@ -11,7 +11,7 @@ def test_batch_mixed_scope1_and_scope2(client, auth_headers):
     resp = client.post("/v1/calculate/batch", json=payload, headers=auth_headers)
     assert resp.status_code == 200
     body = resp.json()
-    expected_total = 500 * 5.311 + 12000 * 0.1981
+    expected_total = 500 * 5.3115 + 12000 * 0.195
     assert body["total_emissions_kg_co2e"] == pytest.approx(expected_total, rel=1e-6)
     assert body["line_item_count"] == 2
     assert body["line_items"][0]["label"] == "jan-gas-bill"

@@ -15,21 +15,35 @@ save for a later paid tier.
 
 ---
 
-## ⚠️ Before charging real customers, read this
+## Emission factor provenance
 
 Every response carries a `disclaimer` field and cites the exact factor
 source + year used, per the project's non-negotiable trust requirements.
-The seed data in [`app/seed/factors_data.py`](app/seed/factors_data.py)
-was compiled from the EPA GHG Emission Factors Hub, EPA eGRID, and UK
-DEFRA/DESNZ GHG Conversion Factors via web research — **not** a live fetch
-of the primary spreadsheets (that access was unavailable in the build
-environment). Each row's `notes` field documents exactly how it was
-derived. **Re-verify every figure against the primary source before this
-API backs a paying customer's ESG reporting.** See "Refreshing emission
-factors" below.
 
-Never use "certified," "verified," or "compliant" anywhere in the
-product — only "estimated" / "calculated using [source]."
+The seed data in [`app/seed/factors_data.py`](app/seed/factors_data.py)
+was verified on 2026-08-21 directly against the primary spreadsheets:
+
+- **US Scope 1 fuels**: EPA "GHG Emission Factors Hub" (2025 edition),
+  Table 1 — Stationary Combustion.
+- **US Scope 2 grid**: EPA eGRID Summary Tables 2023 (eGRID2023 data),
+  Table 1 — Subregion Output Emission Rates. All 27 eGRID subregions plus
+  a `US-AVG` national average are included.
+- **UK Scope 2 grid**: UK Government (DEFRA/DESNZ) GHG Conversion Factors
+  for Company Reporting, 2026 full set, "UK electricity" tab.
+
+CO2 + CH4 + N2O are combined into CO2e using the IPCC AR5 100-year GWPs
+(CH4 = 28, N2O = 265) cited in the EPA Hub itself, applied consistently
+across every row. Each row's `notes` field shows the exact arithmetic from
+the source spreadsheet to the stored factor, so every number is
+re-derivable and auditable.
+
+Emission factors are republished annually (EPA Hub/eGRID yearly; DEFRA
+every June) — re-verify against the current primary spreadsheets on that
+cadence. See "Refreshing emission factors" below.
+
+Never use "certified," "verified" (as a claim about the *emissions*
+themselves), or "compliant" anywhere in the product — only "estimated" /
+"calculated using [source]."
 
 ---
 
@@ -90,11 +104,12 @@ server-side (`app/services/units.py`).
 
 ### Supported grid regions (Scope 2)
 
-US eGRID subregions `US-CAMX` (California), `US-ERCT` (Texas), `US-FRCC`
-(Florida), `US-MROW` (Upper Midwest), plus a `US-AVG` national-average
-fallback; and `UK` (DEFRA/DESNZ). Expand coverage by adding rows to
-`app/seed/factors_data.py` — see the roadmap in the original build brief
-for a request-driven expansion plan.
+All 27 EPA eGRID subregions (`US-CAMX`, `US-ERCT`, `US-NYUP`, `US-RFCW`,
+`US-FRCC`, `US-MROW`, etc. — see `GET /v1/factors` for the full list),
+plus a `US-AVG` national-average fallback for callers who don't know their
+customer's subregion, and `UK` (DEFRA/DESNZ). Expand to other countries by
+adding rows to `app/seed/factors_data.py` — see the roadmap in the
+original build brief for a request-driven expansion plan.
 
 ### Error shape
 

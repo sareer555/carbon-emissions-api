@@ -9,7 +9,7 @@ def test_scope1_natural_gas(client, auth_headers):
     )
     assert resp.status_code == 200
     body = resp.json()
-    assert body["emissions_kg_co2e"] == pytest.approx(500 * 5.311, rel=1e-6)
+    assert body["emissions_kg_co2e"] == pytest.approx(500 * 5.3115, rel=1e-6)
     assert body["factor_source"].startswith("EPA")
     assert "estimate" in body["disclaimer"].lower()
 
@@ -21,7 +21,7 @@ def test_scope1_diesel_gallons(client, auth_headers):
         headers=auth_headers,
     )
     assert resp.status_code == 200
-    assert resp.json()["emissions_kg_co2e"] == pytest.approx(100 * 10.21, rel=1e-6)
+    assert resp.json()["emissions_kg_co2e"] == pytest.approx(100 * 10.2427, rel=1e-6)
 
 
 def test_scope1_diesel_liters_converted(client, auth_headers):
@@ -31,7 +31,7 @@ def test_scope1_diesel_liters_converted(client, auth_headers):
         headers=auth_headers,
     )
     assert resp.status_code == 200
-    assert resp.json()["emissions_kg_co2e"] == pytest.approx(100 * 10.21, rel=1e-3)
+    assert resp.json()["emissions_kg_co2e"] == pytest.approx(100 * 10.2427, rel=1e-3)
 
 
 def test_scope1_invalid_fuel_type_rejected_by_schema(client, auth_headers):

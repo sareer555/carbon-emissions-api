@@ -9,7 +9,7 @@ def test_scope2_us_camx(client, auth_headers):
     )
     assert resp.status_code == 200
     body = resp.json()
-    assert body["emissions_kg_co2e"] == pytest.approx(12000 * 0.1981, rel=1e-6)
+    assert body["emissions_kg_co2e"] == pytest.approx(12000 * 0.195, rel=1e-6)
     assert "eGRID" in body["factor_source"]
 
 
@@ -21,7 +21,7 @@ def test_scope2_uk(client, auth_headers):
     )
     assert resp.status_code == 200
     body = resp.json()
-    assert body["emissions_kg_co2e"] == pytest.approx(1000 * 0.177, rel=1e-6)
+    assert body["emissions_kg_co2e"] == pytest.approx(1000 * 0.13096, rel=1e-6)
     assert "DEFRA" in body["factor_source"] or "DESNZ" in body["factor_source"]
 
 
