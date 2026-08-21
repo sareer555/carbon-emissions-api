@@ -11,10 +11,9 @@ from threading import Lock
 
 from fastapi import Depends
 
-from app.auth import get_api_key
+from app.auth import Caller, authenticate
 from app.config import get_settings
 from app.errors import RateLimitedError
-from app.models import ApiKey
 
 settings = get_settings()
 
@@ -67,11 +66,11 @@ def _build_limiter():
 _limiter = _build_limiter()
 
 
-def enforce_rate_limit(api_key: ApiKey = Depends(get_api_key)) -> ApiKey:
-    """FastAPI dependency: run auth first (get_api_key), then burst rate limiting.
+def enforce_rate_limit(caller: Caller = Depends(authenticate)) -> Caller:
+    """FastAPI dependency: run auth first (authenticate), then burst rate limiting.
 
-    Returns the authenticated ApiKey so route handlers can depend on this
+    Returns the authenticated Caller so route handlers can depend on this
     single function to get both auth and rate limiting.
     """
-    _limiter.check(str(api_key.id))
-    return api_key
+    _limiter.check(caller.rate_limit_key)
+    return caller

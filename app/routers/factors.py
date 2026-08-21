@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.auth import Caller
 from app.config import get_settings
 from app.database import get_db
-from app.models import ApiKey, EmissionFactor
+from app.models import EmissionFactor
 from app.rate_limit import enforce_rate_limit
 from app.schemas import FactorOut, FactorsResponse
 
@@ -19,7 +20,7 @@ settings = get_settings()
 )
 def list_factors(
     db: Session = Depends(get_db),
-    api_key: ApiKey = Depends(enforce_rate_limit),
+    caller: Caller = Depends(enforce_rate_limit),
 ) -> FactorsResponse:
     rows = db.execute(select(EmissionFactor)).scalars().all()
     scope1 = [FactorOut.model_validate(r, from_attributes=True) for r in rows if r.category == "scope1_fuel"]

@@ -32,6 +32,7 @@ class Settings(BaseSettings):
 
     # Auth
     admin_bootstrap_token: Optional[str] = None  # optional shared secret for scripts/create_api_key
+    rapidapi_proxy_secret: Optional[str] = None  # if set, trust X-RapidAPI-Proxy-Secret as an alternate auth path
 
     disclaimer: str = (
         "This is an estimate for informational purposes only, generated from "

@@ -222,6 +222,41 @@ Grid regions (Scope 2) follow an **explicit-year + alias** pattern — see
 
 ---
 
+## Listing on RapidAPI
+
+RapidAPI proxies subscriber requests to your backend and adds an
+`X-RapidAPI-Proxy-Secret` header proving the request came through their
+platform (and their billing) — see `app/auth.py: authenticate()`. RapidAPI
+subscribers never need a `cek_` key of ours; RapidAPI handles their plan,
+quota, and billing on its own side. Direct/self-host customers keep using
+`cek_` keys via `Authorization: Bearer` exactly as before — the two paths
+coexist.
+
+1. Deploy first (see above) so you have a live base URL and can copy the
+   auto-generated `RAPIDAPI_PROXY_SECRET` from Render's Environment tab.
+2. On [rapidapi.com](https://rapidapi.com), sign in and go to your Provider
+   dashboard → **Add New API**.
+3. Import via OpenAPI: point it at `https://<your-service>.onrender.com/openapi.json`
+   — RapidAPI reads it and auto-populates all 6 endpoints, request/response
+   schemas, and descriptions.
+4. Set the **Base URL** to your deployed URL.
+5. Under the API's **Security** settings, add a custom header RapidAPI will
+   attach to every proxied request: name `X-RapidAPI-Proxy-Secret`, value =
+   the `RAPIDAPI_PROXY_SECRET` you copied from Render.
+6. Configure pricing plans to match `app/config.py`'s `plan_quotas` — Free
+   (100 req/mo), Starter ($9/mo, 1,000), Growth ($29/mo, 10,000), Scale
+   ($79/mo, 100,000). These are independent of RapidAPI's own plan names;
+   just match the request-count limits so customers get what they're
+   charged for.
+7. Test via RapidAPI's built-in test console before publishing — confirm a
+   test call returns a real calculation (not a 401), which proves the
+   proxy secret is wired correctly.
+8. Publish. Watch `request_log` (grouped by `category`/`factor_key`) to see
+   which fuel types and regions RapidAPI customers actually call — that's
+   what to expand next.
+
+---
+
 ## Business model (for context, not enforced by the code)
 
 - Free: 100 calls/month · Starter: $9/mo (1,000) · Growth: $29/mo (10,000) · Scale: $79/mo (100,000)

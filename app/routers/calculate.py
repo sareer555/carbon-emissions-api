@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.auth import Caller
 from app.config import get_settings
 from app.database import get_db
 from app.errors import InvalidRequestError
 from app.logging_config import log_request
-from app.models import ApiKey
 from app.rate_limit import enforce_rate_limit
 from app.schemas import (
     BatchLineResult,
@@ -25,10 +25,10 @@ settings = get_settings()
 def scope1(
     body: Scope1Request,
     db: Session = Depends(get_db),
-    api_key: ApiKey = Depends(enforce_rate_limit),
+    caller: Caller = Depends(enforce_rate_limit),
 ) -> CalculationResult:
     result = calculate_scope1(db, body.fuel_type, body.quantity, body.unit)
-    log_request(db, "/v1/calculate/scope1", api_key.id, 200, result.category, result.key)
+    log_request(db, "/v1/calculate/scope1", caller.api_key_id, 200, result.category, result.key)
     return CalculationResult(
         emissions_kg_co2e=result.emissions_kg_co2e,
         category=result.category,
@@ -46,10 +46,10 @@ def scope1(
 def scope2(
     body: Scope2Request,
     db: Session = Depends(get_db),
-    api_key: ApiKey = Depends(enforce_rate_limit),
+    caller: Caller = Depends(enforce_rate_limit),
 ) -> CalculationResult:
     result = calculate_scope2(db, body.kwh, body.region)
-    log_request(db, "/v1/calculate/scope2", api_key.id, 200, result.category, result.key)
+    log_request(db, "/v1/calculate/scope2", caller.api_key_id, 200, result.category, result.key)
     return CalculationResult(
         emissions_kg_co2e=result.emissions_kg_co2e,
         category=result.category,
@@ -71,7 +71,7 @@ def scope2(
 def batch(
     body: BatchRequest,
     db: Session = Depends(get_db),
-    api_key: ApiKey = Depends(enforce_rate_limit),
+    caller: Caller = Depends(enforce_rate_limit),
 ) -> BatchResponse:
     line_results: list[BatchLineResult] = []
     total = 0.0
@@ -89,7 +89,7 @@ def batch(
             result = calculate_scope2(db, item.kwh, item.region)
 
         total += result.emissions_kg_co2e
-        log_request(db, "/v1/calculate/batch", api_key.id, 200, result.category, result.key)
+        log_request(db, "/v1/calculate/batch", caller.api_key_id, 200, result.category, result.key)
         line_results.append(
             BatchLineResult(
                 label=item.label,
